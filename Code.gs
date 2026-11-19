@@ -124,9 +124,10 @@ function readCatalog_() {
     const unit = String(row[4] || "قطعة");
     const slug = categorySlug_(categoryName, id);
     const enteredImage = String(row[9] || "").trim();
+    const imageCategory = { posters: "poster", modules: "module", controllers: "controller" }[slug] || slug;
     const image = /^https:\/\//i.test(enteredImage)
       ? enteredImage
-      : "images/products/" + (id.startsWith("LT-116") ? "television" : slug) + ".svg";
+      : "images/products/" + (id.startsWith("LT-116") ? "television" : imageCategory) + ".svg";
     return {
       id: id, cat: id.startsWith("LT-116") ? "televisions" : slug,
       img: image, zoom: 100, posX: 50, posY: 50,
@@ -217,5 +218,6 @@ function cleanPhone_(value) {
 function jsonOutput_(value) {
   return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON);
 }
+
 
 
