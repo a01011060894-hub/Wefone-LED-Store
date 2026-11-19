@@ -708,19 +708,19 @@
     }
 
     const CATEGORIES = [
-      { id: "all", name: "جميع المنتجات (64)" },
-      { id: "indoor", name: "شاشات داخلية (6)" },
-      { id: "outdoor", name: "شاشات خارجية (6)" },
-      { id: "rental", name: "شاشات التأجير (4)" },
-      { id: "flexible", name: "شاشات مرنة وشفافة (4)" },
-      { id: "posters", name: "بوسترات LED (3)" },
-      { id: "televisions", name: "تلفزيونات LED (3)" },
-      { id: "smartboard", name: "سبورات تفاعلية (11)" },
-      { id: "modules", name: "موديولات وقطع غيار (15)" },
-      { id: "controllers", name: "معالجات وكروت تحكم (12)" }
+      { id: "all", name: "جميع المنتجات" },
+      { id: "indoor", name: "شاشات داخلية" },
+      { id: "outdoor", name: "شاشات خارجية" },
+      { id: "rental", name: "شاشات التأجير" },
+      { id: "flexible", name: "شاشات مرنة وشفافة" },
+      { id: "posters", name: "بوسترات LED" },
+      { id: "televisions", name: "تلفزيونات LED" },
+      { id: "smartboard", name: "سبورات تفاعلية" },
+      { id: "modules", name: "موديولات وقطع غيار" },
+      { id: "controllers", name: "معالجات وكروت تحكم" }
     ];
 
-    // All 38 items pre-mapped to images/<ID>.jpg with automatic SVG fallback if image file is not uploaded yet
+    // Complete 64-item catalog with generated category illustrations.
     const DEFAULT_PRODUCTS = [
   {
     "id": "IS-WF-P1.25-GOB",
@@ -1717,10 +1717,11 @@
       const box = document.getElementById("category-tabs");
       box.innerHTML = CATEGORIES.map(c => {
         const active = c.id === currentCategory;
+        const count = c.id === "all" ? PRODUCTS.length : PRODUCTS.filter(p => p.cat === c.id).length;
         const cls = active
           ? "gold-gradient text-slate-950 font-black"
           : "bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800 font-bold";
-        return '<button onclick="selectCategory(\'' + c.id + '\')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs transition ' + cls + '">' + c.name + '</button>';
+        return '<button onclick="selectCategory(\'' + c.id + '\')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs transition ' + cls + '">' + c.name + ' (' + count + ')</button>';
       }).join("");
     }
 
