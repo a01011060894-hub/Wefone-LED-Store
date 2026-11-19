@@ -1,4 +1,5 @@
-const SPREADSHEET_ID = "1oOMsgkZXoc-xHBYN2PuyMuu1PzcWQE6rl9SHaU_6NKk";
+const SOURCE_SPREADSHEET_ID = "1oOMsgkZXoc-xHBYN2PuyMuu1PzcWQE6rl9SHaU_6NKk";
+const CATALOG_SHEET = "كتالوج الأسعار والصور (64)";
 const CATALOG_GID = "1999798434";
 const ORDERS_SHEET = "سجل الطلبات والمورد";
 const ORDER_ITEMS_SHEET = "تفاصيل الطلبات";
@@ -88,6 +89,7 @@ function doPost(e) {
 function setupOrderSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) throw new Error("Run setupOrderSheets from the private order spreadsheet");
+  initializePrivateCatalog_(ss);
   getOrCreateSheet_(ss, ORDERS_SHEET, [
     "رقم الطلب", "التاريخ والوقت", "اسم العميل", "جوال العميل", "المدينة / الشحن",
     "الأصناف المطلوبة", "سعر البيع للعميل (SAR)", "تكلفة المورد (AED)",
@@ -105,10 +107,11 @@ function setupOrderSheets() {
 }
 
 function readCatalog_() {
-  const url = "https://docs.google.com/spreadsheets/d/" + SPREADSHEET_ID + "/export?format=csv&gid=" + CATALOG_GID;
-  const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
-  if (response.getResponseCode() !== 200) throw new Error("Catalog CSV is not publicly readable");
-  const values = Utilities.parseCsv(response.getContentText("UTF-8")).slice(1);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) throw new Error("The endpoint must run from the private order spreadsheet");
+  const sheet = ss.getSheetByName(CATALOG_SHEET);
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  const values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 11).getDisplayValues();
   return values.filter(row => row[1] && row[3]).map(row => {
     const id = String(row[1]).trim();
     const categoryName = String(row[2] || "");
@@ -128,6 +131,23 @@ function readCatalog_() {
       specs: String(row[10] || "")
     };
   });
+}
+
+function initializePrivateCatalog_(ss) {
+  const headers = [
+    "م", "كود المنتج (ID)", "القسم", "اسم المنتج", "وحدة البيع",
+    "سعر السوق (AED)", "سعر السوق (SAR)", "سعر الموزع (AED)",
+    "هامش الربح (AED)", "اسم ملف الصورة المطلوب (مجلد images)", "المواصفات الفنية"
+  ];
+  const sheet = getOrCreateSheet_(ss, CATALOG_SHEET, headers);
+  if (sheet.getLastRow() > 1) return;
+
+  const url = "https://docs.google.com/spreadsheets/d/" + SOURCE_SPREADSHEET_ID + "/export?format=csv&gid=" + CATALOG_GID;
+  const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  if (response.getResponseCode() !== 200) throw new Error("Unable to import the source catalog");
+  const rows = Utilities.parseCsv(response.getContentText("UTF-8")).slice(1);
+  const products = rows.filter(row => row[1] && row[3]);
+  if (products.length) sheet.getRange(2, 1, products.length, headers.length).setValues(products);
 }
 
 function categorySlug_(name, id) {
