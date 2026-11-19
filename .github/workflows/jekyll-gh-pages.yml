@@ -1,5 +1,0 @@
-# This sample workflow is intentionally disabled. The deploy.yml workflow publishes the static site.
-name: Disabled Jekyll Pages workflow
-
-on:
-  workflow_dispatch:
