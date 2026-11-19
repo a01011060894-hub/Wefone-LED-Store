@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem("wefone_theme") || "dark"; } catch (error) { document.documentElement.dataset.theme = "dark"; }
+  </script>
   <style>
     * { box-sizing: border-box; }
     html, body {
@@ -40,6 +43,25 @@
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
     .whatsapp-pulse { animation: pulse-ring 2.2s infinite; }
+    html[data-theme="light"] { color-scheme: light; }
+    html[data-theme="light"] body { background: #f1f5f9; color: #0f172a; }
+    html[data-theme="light"] header { background: rgba(255,255,255,.94); border-color: #e2e8f0; }
+    html[data-theme="light"] .card-bg { background: linear-gradient(180deg,#fff 0%,#f8fafc 100%); border-color: rgba(217,119,6,.25); }
+    html[data-theme="light"] [class*="bg-slate-950"],
+    html[data-theme="light"] [class*="bg-slate-900"],
+    html[data-theme="light"] [class*="bg-slate-800"],
+    html[data-theme="light"] [class*="bg-[#0B132B]"],
+    html[data-theme="light"] [class*="bg-[#101930]"],
+    html[data-theme="light"] [class*="bg-[#0F172A]"],
+    html[data-theme="light"] [class*="bg-[#080E21]"],
+    html[data-theme="light"] [class*="bg-[#090F20]"] { background-color: #fff !important; }
+    html[data-theme="light"] [class*="border-slate-800"], html[data-theme="light"] [class*="border-slate-700"] { border-color: #cbd5e1 !important; }
+    html[data-theme="light"] [class*="text-slate-100"], html[data-theme="light"] [class*="text-slate-200"], html[data-theme="light"] [class*="text-slate-300"], html[data-theme="light"] [class*="text-slate-400"] { color: #475569 !important; }
+    html[data-theme="light"] [class*="text-white"] { color: #0f172a !important; }
+    html[data-theme="light"] .gold-gradient, html[data-theme="light"] .bg-emerald-600, html[data-theme="light"] .bg-emerald-500, html[data-theme="light"] .bg-gradient-to-l { color: #fff !important; }
+    html[data-theme="light"] .bg-emerald-600 [class*="text-white"], html[data-theme="light"] .bg-emerald-500 [class*="text-white"], html[data-theme="light"] .bg-gradient-to-l [class*="text-white"] { color: #fff !important; }
+    html[data-theme="light"] #calculator { background-color: #eaf0f6; }
+    html[data-theme="light"] input, html[data-theme="light"] select, html[data-theme="light"] textarea { color: #0f172a; }
   </style>
 </head>
 <body class="antialiased selection:bg-amber-500 selection:text-slate-950">
@@ -64,7 +86,7 @@
   <header class="sticky top-0 z-40 bg-[#0B132B]/95 backdrop-blur-md border-b border-amber-500/20">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
       <!-- Logo (5 taps to unlock secret admin) -->
-      <div class="flex items-center gap-2.5 select-none" title="WeFone LED">
+      <div onclick="handleSecretLogoTap()" class="flex items-center gap-2.5 cursor-pointer select-none" title="WeFone LED — اضغط خمس مرات لفتح الإعدادات">
         <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center text-slate-950 font-black text-lg shadow-lg shadow-amber-500/20">
           WF
         </div>
@@ -86,6 +108,9 @@
 
       <!-- Right Controls: Currency + Cart + Mobile Menu -->
       <div class="flex items-center gap-2">
+        <button onclick="toggleTheme()" id="theme-toggle" type="button" aria-label="تبديل المظهر" title="تبديل المظهر" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white px-2.5 py-2 rounded-xl text-xs font-bold transition">
+          <span id="theme-toggle-icon">☀️</span><span id="theme-toggle-label" class="hidden sm:inline mr-1">فاتح</span>
+        </button>
         <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl p-0.5 text-xs font-bold">
           <button onclick="setCurrency('SAR')" id="curr-SAR" class="px-2 py-1.5 rounded-lg bg-amber-500 text-slate-950 transition">SAR</button>
           <button onclick="setCurrency('AED')" id="curr-AED" class="px-2 py-1.5 rounded-lg text-slate-300 hover:text-white transition">AED</button>
@@ -425,8 +450,8 @@
 
       <div class="p-4 bg-slate-900 border-t border-slate-800 space-y-3">
         <div class="grid grid-cols-2 gap-2">
-          <input type="text" id="cust-name" placeholder="الاسم الكريم *" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none" />
-          <input type="tel" id="cust-phone" placeholder="رقم الجوال *" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none" />
+          <input type="text" id="cust-name" placeholder="الاسم الكريم *" autocomplete="name" required class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none" />
+          <input type="tel" id="cust-phone" placeholder="رقم الجوال *" autocomplete="tel" required class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none" />
         </div>
         <div class="grid grid-cols-2 gap-2">
           <select id="shipping-dest" class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
@@ -436,6 +461,8 @@
           </select>
           <input type="text" id="cust-city" placeholder="المدينة / ملاحظات" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none" />
         </div>
+
+        <p class="text-[10px] leading-relaxed text-slate-400">بإرسال الطلب، توافق على حفظ بيانات التواصل وتفاصيل الطلب في سجل المتجر لمتابعة عرض السعر والتوريد.</p>
 
         <div class="flex items-center justify-between text-xs text-amber-300 bg-amber-500/10 px-3 py-2 rounded-lg">
           <span>🚚 الشحن:</span>
@@ -460,8 +487,20 @@
     </div>
   </div>
 
+  <div id="admin-settings-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-sm rounded-2xl border border-amber-500/40 bg-[#0F172A] p-5 space-y-4 text-center">
+      <div class="text-3xl">⚙️</div>
+      <h3 class="text-lg font-black text-amber-400">إعدادات المتجر</h3>
+      <p class="text-sm text-slate-300 leading-relaxed">اضغط خمس مرات على الشعار لفتح هذه النافذة. أضف أو عدّل المنتجات والأسعار والمواصفات ورابط الصورة في جدول الكتالوج، ثم حدّث الصفحة. استخدم رابط صورة عام يبدأ بـ https:// لصور المنتجات.</p>
+      <a href="https://docs.google.com/spreadsheets/d/1oOMsgkZXoc-xHBYN2PuyMuu1PzcWQE6rl9SHaU_6NKk/edit?gid=1999798434#gid=1999798434" target="_blank" rel="noopener noreferrer" class="block w-full gold-gradient rounded-xl px-4 py-3 font-black text-slate-950">📋 فتح كتالوج المنتجات</a>
+      <a id="private-orders-link" href="#" target="_blank" rel="noopener noreferrer" class="block w-full rounded-xl border border-emerald-500/50 bg-emerald-900/30 px-4 py-3 font-bold text-emerald-200">🔒 فتح سجل الطلبات الخاص</a>
+      <p id="orders-link-note" class="text-xs text-slate-400">يُضاف رابط سجل الطلبات بعد إعداد Google Apps Script.</p>
+      <button onclick="closeAdminSettings()" class="w-full rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-200">إغلاق</button>
+    </div>
+  </div>
+
   <!-- Product editor disabled for this public static deployment. -->
-  <div id="product-editor-modal" class="hidden">
+  <div id="product-editor-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-3">
     <div class="bg-[#0F172A] border border-amber-500/40 rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto p-5 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base sm:text-lg font-black text-amber-400">✏️ تعديل المنتج (الوسائط والموضع / الاسم / السعر)</h3>
@@ -515,7 +554,7 @@
       <div class="space-y-2">
         <label class="block text-xs font-bold text-amber-300">1. مسار الصورة في مجلد GitHub أو رابط خارجي:</label>
         <div class="flex gap-2">
-          <input type="text" id="edit-prod-img" oninput="previewEditedImage()" placeholder="images/IS-WF-P2.5-MASK.jpg"
+          <input type="text" id="edit-prod-img" oninput="previewEditedImage()" placeholder="images/IS-WF-P2.5-MASK.svg"
             class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none" dir="ltr" />
           <button type="button" onclick="clearProductCustomImg()" class="bg-slate-800 hover:bg-red-900/50 text-slate-300 px-2.5 py-2 rounded-xl text-xs font-bold">
             حذف الوسائط
@@ -570,10 +609,10 @@
       <div class="p-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 class="text-lg font-black text-amber-400">📊 جدول بيانات الطلبات المخزنة (Orders Spreadsheet)</h3>
-          <p class="text-xs text-slate-400">هذه الطلبات محفوظة محليًا في هذا المتصفح فقط، ولا تُرفع إلى قاعدة بيانات مشتركة.</p>
+          <p class="text-xs text-slate-400">يفتح سجل الطلبات المركزي الخاص من إعدادات المتجر، ويظل سجل المتصفح محليًا كنسخة مؤقتة.</p>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="exportOrdersCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">📥 تصدير Excel / CSV</button>
+          <a href="https://docs.google.com/spreadsheets/d/1oOMsgkZXoc-xHBYN2PuyMuu1PzcWQE6rl9SHaU_6NKk/edit" target="_blank" rel="noopener noreferrer" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">📊 سجل الطلبات المركزي</a>
           <button onclick="closeOrdersModal()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold">✖ إغلاق</button>
         </div>
       </div>
@@ -602,6 +641,8 @@
     // ==========================================
     const MY_WHATSAPP = "966568397048";
     const SUPPLIER_WHATSAPP = "201011060894";
+    const ORDERS_WEB_APP_URL = ""; // Paste the deployed Apps Script web-app URL here before publishing.
+    const PRIVATE_ORDER_BOOK_ID = ""; // Fill from setupOrderSheets() output before publishing.
 
     const CURRENCY_RATES = {
       SAR: { rate: 1.02, symbol: "ر.س" },
@@ -610,78 +651,976 @@
     };
     let currentCurrency = "SAR";
     let currentCategory = "all";
-    const isEditMode = false;
+    let isEditMode = false;
+    let logoTapCount = 0;
+    let logoTapTimer = null;
+    let adminUnlocked = false;
+
+    function toggleTheme() {
+      const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem("wefone_theme", next); } catch (error) { /* preference remains for this page */ }
+      document.getElementById("theme-toggle-icon").textContent = next === "light" ? "🌙" : "☀️";
+      document.getElementById("theme-toggle-label").textContent = next === "light" ? "غامق" : "فاتح";
+      document.getElementById("theme-toggle").setAttribute("aria-label", next === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح");
+    }
+
+    function handleSecretLogoTap() {
+      logoTapCount += 1;
+      clearTimeout(logoTapTimer);
+      logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 1800);
+      if (logoTapCount >= 5) {
+        logoTapCount = 0;
+        adminUnlocked = true;
+        isEditMode = true;
+        renderProducts();
+        document.getElementById("admin-settings-modal").classList.remove("hidden");
+      }
+    }
+
+    function closeAdminSettings() {
+      document.getElementById("admin-settings-modal").classList.add("hidden");
+      isEditMode = false;
+      renderProducts();
+    }
+
+    function setPrivateOrdersSheet(sheetId) {
+      if (!sheetId) return;
+      const link = document.getElementById("private-orders-link");
+      link.href = "https://docs.google.com/spreadsheets/d/" + encodeURIComponent(sheetId) + "/edit";
+      link.classList.remove("hidden");
+      document.getElementById("orders-link-note").textContent = "ملف الطلبات خاص ولا يراه إلا من تمنحه صلاحية من Google Drive.";
+    }
+
+    function loadCatalogFromGoogleSheet() {
+      if (!ORDERS_WEB_APP_URL) return;
+      window.__wefoneCatalogCallback = function(rows) {
+        if (!Array.isArray(rows) || rows.length === 0) return;
+        PRODUCTS = rows;
+        renderProducts();
+        populateCalculatorSelect();
+        updateCalculator();
+      };
+      const tag = document.createElement("script");
+      tag.src = ORDERS_WEB_APP_URL + "?action=catalog&callback=__wefoneCatalogCallback&v=" + Date.now();
+      tag.onerror = () => showToast("تعذر تحديث الكتالوج؛ يتم عرض النسخة المحفوظة بالموقع");
+      document.head.appendChild(tag);
+    }
 
     const CATEGORIES = [
-      { id: "all", name: "جميع المنتجات (38)" },
-      { id: "indoor", name: "شاشات داخلية (Indoor)" },
-      { id: "outdoor", name: "شاشات خارجية (Outdoor)" },
-      { id: "rental", name: "شاشات التأجير (50×50)" },
-      { id: "flexible", name: "شاشات مرنة (Flexible)" },
-      { id: "posters", name: "بوسترات وتلفزيونات" },
-      { id: "smartboard", name: "سبورات تفاعلية" },
-      { id: "modules", name: "موديولات وقطع غيار" },
-      { id: "controllers", name: "معالجات NovaStar و Colorlight" }
+      { id: "all", name: "جميع المنتجات (64)" },
+      { id: "indoor", name: "شاشات داخلية (6)" },
+      { id: "outdoor", name: "شاشات خارجية (6)" },
+      { id: "rental", name: "شاشات التأجير (4)" },
+      { id: "flexible", name: "شاشات مرنة وشفافة (4)" },
+      { id: "posters", name: "بوسترات LED (3)" },
+      { id: "televisions", name: "تلفزيونات LED (3)" },
+      { id: "smartboard", name: "سبورات تفاعلية (11)" },
+      { id: "modules", name: "موديولات وقطع غيار (15)" },
+      { id: "controllers", name: "معالجات وكروت تحكم (12)" }
     ];
 
     // All 38 items pre-mapped to images/<ID>.jpg with automatic SVG fallback if image file is not uploaded yet
     const DEFAULT_PRODUCTS = [
-      // 1-3: Indoor Screens
-      { id: "IS-WF-P1.5-GOB", cat: "indoor", img: "images/IS-WF-P1.5-GOB.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة داخلية P1.53 GOB", unit: "متر مربع", soldBySqm: true, marketAED: 4901, resellerAED: 4166, specs: "سطوع 700 nits • تحديث 3840Hz • حماية GOB • صيانة أمامية" },
-      { id: "IS-WF-P1.8-GOB", cat: "indoor", img: "images/IS-WF-P1.8-GOB.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة داخلية P1.86 GOB", unit: "متر مربع", soldBySqm: true, marketAED: 3972, resellerAED: 3376, specs: "سطوع 700 nits • تحديث 3840Hz • حماية GOB • كابينة 640×480" },
-      { id: "IS-WF-P2.5-MASK", cat: "indoor", img: "images/IS-WF-P2.5-MASK.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة داخلية P2.5", unit: "متر مربع", soldBySqm: true, marketAED: 2620, resellerAED: 2227, specs: "سطوع 700 nits • تحديث 3840Hz • صيانة أمامية • دقة عالية" },
+  {
+    "id": "IS-WF-P1.25-GOB",
+    "cat": "indoor",
+    "img": "images/products/indoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة داخلية P1.25 GOB",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 6850.0,
+    "resellerAED": 5820.0,
+    "specs": "سطوع 700 nits • تحديث 3840Hz • حماية GOB • صيانة أمامية"
+  },
+  {
+    "id": "IS-WF-P1.5-GOB",
+    "cat": "indoor",
+    "img": "images/products/indoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة داخلية P1.53 GOB",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 4901.0,
+    "resellerAED": 4166.0,
+    "specs": "سطوع 700 nits • تحديث 3840Hz • حماية GOB • صيانة أمامية"
+  },
+  {
+    "id": "IS-WF-P1.8-GOB",
+    "cat": "indoor",
+    "img": "images/products/indoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة داخلية P1.86 GOB",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 3972.0,
+    "resellerAED": 3376.0,
+    "specs": "سطوع 700 nits • تحديث 3840Hz • حماية GOB • كابينة 640×480"
+  },
+  {
+    "id": "IS-WF-P1.8-SMD",
+    "cat": "indoor",
+    "img": "images/products/indoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة داخلية P1.86 SMD",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 3450.0,
+    "resellerAED": 2930.0,
+    "specs": "سطوع 700 nits • تحديث 3840Hz • صيانة أمامية • كابينة 640×480"
+  },
+  {
+    "id": "IS-WF-P2.5-MASK",
+    "cat": "indoor",
+    "img": "images/products/indoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة داخلية P2.5 (320×160)",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 2620.0,
+    "resellerAED": 2227.0,
+    "specs": "سطوع 700 nits • تحديث 3840Hz • صيانة أمامية • دقة عالية"
+  },
+  {
+    "id": "IS-WF-P2.5-640",
+    "cat": "indoor",
+    "img": "images/products/indoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة داخلية P2.5 كابينة 640×480",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 2890.0,
+    "resellerAED": 2456.0,
+    "specs": "كابينة ألمنيوم 640×480 • تحديث 3840Hz • صيانة أمامية"
+  },
+  {
+    "id": "OS-WF-P2.5",
+    "cat": "outdoor",
+    "img": "images/products/outdoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة خارجية P2.5",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 4314.0,
+    "resellerAED": 3667.0,
+    "specs": "سطوع 7000 nits • مقاومة IP65 • كابينة 960×960 مم"
+  },
+  {
+    "id": "OS-WF-P3",
+    "cat": "outdoor",
+    "img": "images/products/outdoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة خارجية P3",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 3590.0,
+    "resellerAED": 3050.0,
+    "specs": "سطوع 7000 nits • مقاومة IP65 • تحديث 3840Hz"
+  },
+  {
+    "id": "OS-WF-P4",
+    "cat": "outdoor",
+    "img": "images/products/outdoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة خارجية P4",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 2757.0,
+    "resellerAED": 2344.0,
+    "specs": "سطوع 7000 nits • مقاومة IP65 • تحديث 3840Hz"
+  },
+  {
+    "id": "OS-WF-P5",
+    "cat": "outdoor",
+    "img": "images/products/outdoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة خارجية P5",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 2540.0,
+    "resellerAED": 2159.0,
+    "specs": "سطوع 7000 nits • مقاومة IP65 • مثالية للواجهات"
+  },
+  {
+    "id": "OS-WF-P6.67",
+    "cat": "outdoor",
+    "img": "images/products/outdoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة خارجية P6.67",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 2280.0,
+    "resellerAED": 1938.0,
+    "specs": "سطوع 7500 nits • مقاومة IP65 • للوحات الطرقية"
+  },
+  {
+    "id": "OS-WF-P8",
+    "cat": "outdoor",
+    "img": "images/products/outdoor.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة خارجية P8",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 2050.0,
+    "resellerAED": 1742.0,
+    "specs": "سطوع 7500 nits • مقاومة IP65 • للمسافات البعيدة"
+  },
+  {
+    "id": "ORS-WF-P2.6-5050",
+    "cat": "rental",
+    "img": "images/products/rental.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة تأجير داخلي/خارجي P2.6",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 4680.0,
+    "resellerAED": 3978.0,
+    "specs": "قطعة 50×50 سم • تحديث 7860Hz • فك وتركيب سريع"
+  },
+  {
+    "id": "ORS-WF-P2.9-5050",
+    "cat": "rental",
+    "img": "images/products/rental.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة تأجير خارجي/داخلي P2.9",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 4155.0,
+    "resellerAED": 3532.0,
+    "specs": "قطعة 50×50 سم • تحديث 7860Hz • فك وتركيب سريع"
+  },
+  {
+    "id": "ORS-WF-P3.9-5050",
+    "cat": "rental",
+    "img": "images/products/rental.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة تأجير خارجي/داخلي P3.9",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 3030.0,
+    "resellerAED": 2576.0,
+    "specs": "قطعة 50×50 سم • تحديث 7860Hz • مخصصة للمسارح"
+  },
+  {
+    "id": "IRS-WF-P3.9-5050",
+    "cat": "rental",
+    "img": "images/products/rental.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة تأجير داخلي P3.9 Indoor",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 2650.0,
+    "resellerAED": 2252.0,
+    "specs": "قطعة 50×50 سم • تحديث 7860Hz • للقاعات والمعارض"
+  },
+  {
+    "id": "IFS-WF-P1.8-GOB",
+    "cat": "flexible",
+    "img": "images/products/flexible.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة مرنة منحنية P1.86 GOB",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 5295.0,
+    "resellerAED": 4500.0,
+    "specs": "مرنة للأعمدة والزوايا • سطوع 900 nits • حماية GOB"
+  },
+  {
+    "id": "IFS-WF-P2.5",
+    "cat": "flexible",
+    "img": "images/products/flexible.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة مرنة منحنية P2.5",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 3894.0,
+    "resellerAED": 3310.0,
+    "specs": "مرنة للأعمدة والمنحنيات • سطوع 900 nits • تحديث 3840Hz"
+  },
+  {
+    "id": "TRS-WF-P3.9",
+    "cat": "flexible",
+    "img": "images/products/flexible.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة زجاجية شفافة P3.9-7.8",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 5450.0,
+    "resellerAED": 4632.0,
+    "specs": "شفافية 75% للواجهات الزجاجية • سطوع 4500 nits"
+  },
+  {
+    "id": "TRS-WF-P10.4",
+    "cat": "flexible",
+    "img": "images/products/flexible.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "شاشة زجاجية شفافة P10.4",
+    "unit": "متر مربع",
+    "soldBySqm": true,
+    "marketAED": 3950.0,
+    "resellerAED": 3358.0,
+    "specs": "شفافية 85% • خفيفة الوزن للواجهات التجارية"
+  },
+  {
+    "id": "LP-1.5IS",
+    "cat": "posters",
+    "img": "images/products/posters.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "بوستر LED قابل للطي P1.53 GOB",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 6962.0,
+    "resellerAED": 5917.0,
+    "specs": "مقاس 640×1920 مم • بعجلات • تحكم WiFi و Cloud"
+  },
+  {
+    "id": "LP-1.8IS",
+    "cat": "posters",
+    "img": "images/products/posters.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "بوستر LED قابل للطي P1.86 GOB",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 5880.0,
+    "resellerAED": 4998.0,
+    "specs": "مقاس 640×1920 مم • قابل للطي • صيانة أمامية"
+  },
+  {
+    "id": "LP-2.5IS",
+    "cat": "posters",
+    "img": "images/products/posters.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "بوستر LED قابل للطي P2.5",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 4750.0,
+    "resellerAED": 4038.0,
+    "specs": "مقاس 640×1920 مم • بعجلات • ربط عدة شاشات معاً"
+  },
+  {
+    "id": "LT-116-1.53IS",
+    "cat": "televisions",
+    "img": "images/products/television.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "تلفزيون LED عملاق 116 بوصة P1.53",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 21268.0,
+    "resellerAED": 18609.0,
+    "specs": "مقاس 2.56×1.44 متر • دقة فائقة GOB • ستاند متحرك"
+  },
+  {
+    "id": "LT-116-1.86IS",
+    "cat": "televisions",
+    "img": "images/products/television.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "تلفزيون LED عملاق 116 بوصة P1.86",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 18780.0,
+    "resellerAED": 16432.0,
+    "specs": "مقاس 2.56×1.44 متر • ستاند متحرك • مدخل HDMI"
+  },
+  {
+    "id": "LT-116-2.5IS",
+    "cat": "televisions",
+    "img": "images/products/television.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "تلفزيون LED عملاق 116 بوصة P2.5",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 15900.0,
+    "resellerAED": 13515.0,
+    "specs": "مقاس 2.56×1.44 متر • ستاند متحرك • للقاعات"
+  },
+  {
+    "id": "SB-55",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "سبورة تفاعلية ذكية 55 بوصة 4K",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 3250.0,
+    "resellerAED": 2760.0,
+    "specs": "نظام Android 8G+128G • لمس متعدد 20 نقطة"
+  },
+  {
+    "id": "SB-65",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "سبورة تفاعلية ذكية 65 بوصة 4K",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 3960.0,
+    "resellerAED": 3300.0,
+    "specs": "نظام Android 8G+128G • لمس متعدد 20 نقطة"
+  },
+  {
+    "id": "SB-75",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "سبورة تفاعلية ذكية 75 بوصة 4K",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 5090.0,
+    "resellerAED": 4242.0,
+    "specs": "نظام Android 13 8G+128G • للمدارس والاجتماعات"
+  },
+  {
+    "id": "SB-86",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "سبورة تفاعلية ذكية 86 بوصة 4K",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 6240.0,
+    "resellerAED": 5200.0,
+    "specs": "نظام Android 13 8G+128G • شاشة 4K مضادة للانعكاس"
+  },
+  {
+    "id": "SB-98",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "سبورة تفاعلية ذكية 98 بوصة 4K",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 11500.0,
+    "resellerAED": 9775.0,
+    "specs": "نظام Android 13 8G+128G • للقاعات الكبرى"
+  },
+  {
+    "id": "SB-110",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "سبورة تفاعلية ذكية 110 بوصة 4K",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 16800.0,
+    "resellerAED": 14280.0,
+    "specs": "شاشة عملاقة للمدرجات وغرف القيادة • 4K UHD"
+  },
+  {
+    "id": "OPS-WIN11",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "كمبيوتر مدمج OPS Windows 11 i5",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 1680.0,
+    "resellerAED": 1400.0,
+    "specs": "معالج Core i5 • رام 8GB • تخزين 256GB SSD"
+  },
+  {
+    "id": "OPS-WIN11-I7",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "كمبيوتر مدمج OPS Windows 11 i7",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 2250.0,
+    "resellerAED": 1890.0,
+    "specs": "معالج Core i7 • رام 16GB • تخزين 512GB SSD"
+  },
+  {
+    "id": "K-STAND",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "ستاند متحرك للسبورة الذكية (55-86)",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 636.0,
+    "resellerAED": 530.0,
+    "specs": "حديد مطلي أسود مع عجلات وقفل أمان"
+  },
+  {
+    "id": "K-STAND-HD",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "ستاند ثقيل للسبورات الكبيرة (98-110)",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 950.0,
+    "resellerAED": 790.0,
+    "specs": "هيكل فولاذي مزدوج التحمل مع عجلات صناعية"
+  },
+  {
+    "id": "AI-CAM-48MP",
+    "cat": "smartboard",
+    "img": "images/products/smartboard.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "كاميرا اجتماعات ذكية AI 48MP",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 420.0,
+    "resellerAED": 350.0,
+    "specs": "تتبع صوتي تلقائي للمتحدث • دقة 4K • ميكروفون مدمج"
+  },
+  {
+    "id": "FLIGHT-CASE-8",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "صندوق تخزين ونقل Flight Case",
+    "unit": "صندوق",
+    "soldBySqm": false,
+    "marketAED": 550.0,
+    "resellerAED": 500.0,
+    "specs": "مخصص لشاشات التأجير (يستوعب حتى 6-8 كبائن 50×50)"
+  },
+  {
+    "id": "HANGING-BAR-05",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "مسطرة تعليق علوية Hanging Bar 0.5m",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 116.0,
+    "resellerAED": 106.0,
+    "specs": "مسطرة تعليق ألمنيوم مقوى لكبائن التأجير 50×50 سم"
+  },
+  {
+    "id": "HANGING-BAR-10",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "مسطرة تعليق مزدوجة Hanging Bar 1.0m",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 210.0,
+    "resellerAED": 190.0,
+    "specs": "مسطرة تعليق بطول 1 متر لكبائن التأجير"
+  },
+  {
+    "id": "MOD-IN-P1.53",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "موديول داخلي P1.53 GOB (320×160)",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 165.0,
+    "resellerAED": 148.0,
+    "specs": "حماية GOB • تحديث 3840Hz • دقة فائقة"
+  },
+  {
+    "id": "MOD-IN-P1.86",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "موديول داخلي P1.86 GOB (320×160)",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 112.0,
+    "resellerAED": 101.0,
+    "specs": "حماية GOB • تحديث 3840Hz"
+  },
+  {
+    "id": "MOD-IN-P2.5",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "موديول داخلي P2.5 (320×160 مم)",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 63.0,
+    "resellerAED": 58.0,
+    "specs": "تحديث 3840Hz • سطوع 700 nits"
+  },
+  {
+    "id": "MOD-OUT-P4",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "موديول خارجي P4 (320×160 مم)",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 69.0,
+    "resellerAED": 63.0,
+    "specs": "سطوع 5500 nits • مقاوم للعوامل الجوية"
+  },
+  {
+    "id": "MOD-OUT-P5",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "موديول خارجي P5 (320×160 مم)",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 59.0,
+    "resellerAED": 53.0,
+    "specs": "سطوع 6000 nits • مقاوم للماء والغبار IP65"
+  },
+  {
+    "id": "PSU-CZCL-200",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "باور سبلاي CZCL 200W 5V (نحيف)",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 42.0,
+    "resellerAED": 38.0,
+    "specs": "مخصص للشاشات الداخلية النحيفة 40A"
+  },
+  {
+    "id": "PSU-CZCL-300",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "باور سبلاي CZCL 300W 5V",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 50.0,
+    "resellerAED": 45.0,
+    "specs": "يغذي حتى 6 موديولات خارجية بكفاءة عالية 60A"
+  },
+  {
+    "id": "PA-PLC-20KW",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "لوحة توزيع كهرباء PA-PLC 20KW",
+    "unit": "لوحة",
+    "soldBySqm": false,
+    "marketAED": 1100.0,
+    "resellerAED": 1000.0,
+    "specs": "6 خطوط حماية • مخصصة لتشغيل شاشات LED"
+  },
+  {
+    "id": "PA-PLC-30KW",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "لوحة توزيع كهرباء PA-PLC 30KW",
+    "unit": "لوحة",
+    "soldBySqm": false,
+    "marketAED": 1450.0,
+    "resellerAED": 1320.0,
+    "specs": "9 خطوط حماية • للشاشات الخارجية والعملاقة"
+  },
+  {
+    "id": "PA-PLC-40KW",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "لوحة توزيع كهرباء PA-PLC 40KW",
+    "unit": "لوحة",
+    "soldBySqm": false,
+    "marketAED": 1850.0,
+    "resellerAED": 1680.0,
+    "specs": "12 خط حماية • للمشاريع الخارجية الضخمة"
+  },
+  {
+    "id": "SSR-L16",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "حساس السطوع التلقائي SSR-L16",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 265.0,
+    "resellerAED": 221.0,
+    "specs": "ضبط سطوع الشاشة الخارجية ليلاً/نهاراً تلقائياً"
+  },
+  {
+    "id": "SSR-TEMP",
+    "cat": "modules",
+    "img": "images/products/modules.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "حساس قياس الحرارة والرطوبة SSR-TEMP",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 240.0,
+    "resellerAED": 200.0,
+    "specs": "مراقبة درجة حرارة الكابينة والحماية من السخونة"
+  },
+  {
+    "id": "MRV412-N",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "كارت استقبال NovaStar MRV412-N",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 68.0,
+    "resellerAED": 58.0,
+    "specs": "سعة 512×512 بكسل • 12 منفذ HUB75"
+  },
+  {
+    "id": "MRV416",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "كارت استقبال NovaStar MRV416",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 85.0,
+    "resellerAED": 72.0,
+    "specs": "سعة 512×384 بكسل • 16 منفذ HUB75E"
+  },
+  {
+    "id": "A5S-PLUS",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "كارت استقبال احترافي NovaStar A5s Plus",
+    "unit": "قطعة",
+    "soldBySqm": false,
+    "marketAED": 135.0,
+    "resellerAED": 115.0,
+    "specs": "معايرة ألوان متقدمة • لشاشات التأجير والدقة العالية"
+  },
+  {
+    "id": "NOVA-TB40",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج تشغيل سحابي NovaStar TB40",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 901.0,
+    "resellerAED": 766.0,
+    "specs": "سعة 1.3 مليون بكسل • WiFi و LAN و USB"
+  },
+  {
+    "id": "NOVA-TB50",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج تشغيل سحابي NovaStar TB50",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 1380.0,
+    "resellerAED": 1173.0,
+    "specs": "سعة 1.3 مليون بكسل • منفذ HDMI • تحكم سحابي"
+  },
+  {
+    "id": "NOVA-TB60",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج تشغيل سحابي NovaStar TB60",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 2071.0,
+    "resellerAED": 1760.0,
+    "specs": "سعة 2.3 مليون بكسل • تحكم سحابي متكامل"
+  },
+  {
+    "id": "NOVA-VX400",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج فيديو احترافي NovaStar VX400",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 3250.0,
+    "resellerAED": 2762.0,
+    "specs": "سعة 2.6 مليون بكسل • 4 مخارج شبكة"
+  },
+  {
+    "id": "NOVA-VX600",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج فيديو احترافي NovaStar VX600 PRO",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 5179.0,
+    "resellerAED": 4402.0,
+    "specs": "سعة 3.9 مليون بكسل • 6 مخارج شبكة"
+  },
+  {
+    "id": "NOVA-VX1000",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج فيديو عملاق NovaStar VX1000 PRO",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 7409.0,
+    "resellerAED": 6298.0,
+    "specs": "سعة 6.5 مليون بكسل • 10 مخارج شبكة"
+  },
+  {
+    "id": "COLORLIGHT-A200",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج تشغيل سحابي Colorlight A200",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 980.0,
+    "resellerAED": 830.0,
+    "specs": "سعة 1.3 مليون بكسل • تحكم WiFi و Cloud و 4G"
+  },
+  {
+    "id": "COLORLIGHT-Z5",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج فيديو احترافي Colorlight Z5",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 4650.0,
+    "resellerAED": 3950.0,
+    "specs": "سعة 4.2 مليون بكسل • معالجة 4K و HDR"
+  },
+  {
+    "id": "COLORLIGHT-Z6",
+    "cat": "controllers",
+    "img": "images/products/controllers.svg",
+    "zoom": 100,
+    "posX": 50,
+    "posY": 50,
+    "name": "معالج فيديو عملاق Colorlight Z6 PRO",
+    "unit": "جهاز",
+    "soldBySqm": false,
+    "marketAED": 6850.0,
+    "resellerAED": 5820.0,
+    "specs": "سعة 8.3 مليون بكسل • معالجة 4K60Hz احترافية"
+  }
+];
 
-      // 4-6: Outdoor Screens
-      { id: "OS-WF-P2.5", cat: "outdoor", img: "images/OS-WF-P2.5.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة خارجية P2.5", unit: "متر مربع", soldBySqm: true, marketAED: 4314, resellerAED: 3667, specs: "سطوع 7000 nits • مقاومة IP65 • كابينة 960×960 مم" },
-      { id: "OS-WF-P4", cat: "outdoor", img: "images/OS-WF-P4.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة خارجية P4", unit: "متر مربع", soldBySqm: true, marketAED: 2757, resellerAED: 2344, specs: "سطوع 7000 nits • مقاومة IP65 • تحديث 3840Hz" },
-      { id: "OS-WF-P5", cat: "outdoor", img: "images/OS-WF-P5.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة خارجية P5", unit: "متر مربع", soldBySqm: true, marketAED: 2540, resellerAED: 2159, specs: "سطوع 7000 nits • مقاومة IP65 • مثالية للواجهات" },
-
-      // 7-8: Rental Screens (50x50cm)
-      { id: "ORS-WF-P2.9-5050", cat: "rental", img: "images/ORS-WF-P2.9-5050.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة تأجير خارجي/داخلي P2.9", unit: "متر مربع", soldBySqm: true, marketAED: 4155, resellerAED: 3532, specs: "قطعة 50×50 سم • تحديث 7860Hz • فك وتركيب سريع" },
-      { id: "ORS-WF-P3.9-5050", cat: "rental", img: "images/ORS-WF-P3.9-5050.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة تأجير خارجي/داخلي P3.9", unit: "متر مربع", soldBySqm: true, marketAED: 3030, resellerAED: 2576, specs: "قطعة 50×50 سم • تحديث 7860Hz • مخصصة للمسارح" },
-
-      // 9-10: Flexible Screens
-      { id: "IFS-WF-P1.8-GOB", cat: "flexible", img: "images/IFS-WF-P1.8-GOB.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة مرنة منحنية P1.86 GOB", unit: "متر مربع", soldBySqm: true, marketAED: 5295, resellerAED: 4500, specs: "مرنة للأعمدة والزوايا • سطوع 900 nits • حماية GOB" },
-      { id: "IFS-WF-P2.5", cat: "flexible", img: "images/IFS-WF-P2.5.jpg", zoom: 100, posX: 50, posY: 50, name: "شاشة مرنة منحنية P2.5", unit: "متر مربع", soldBySqm: true, marketAED: 3894, resellerAED: 3310, specs: "مرنة للأعمدة والمنحنيات • سطوع 900 nits • تحديث 3840Hz" },
-
-      // 11-14: Posters & 116" LED TVs
-      { id: "LP-1.5IS", cat: "posters", img: "images/LP-1.5IS.jpg", zoom: 100, posX: 50, posY: 50, name: "بوستر LED قابل للطي P1.53 GOB", unit: "جهاز", soldBySqm: false, marketAED: 6962, resellerAED: 5917, specs: "مقاس 640×1920 مم • بعجلات • تحكم WiFi و Cloud" },
-      { id: "LP-1.8IS", cat: "posters", img: "images/LP-1.8IS.jpg", zoom: 100, posX: 50, posY: 50, name: "بوستر LED قابل للطي P1.86 GOB", unit: "جهاز", soldBySqm: false, marketAED: 5880, resellerAED: 4998, specs: "مقاس 640×1920 مم • قابل للطي • صيانة أمامية" },
-      { id: "LT-116-1.86IS", cat: "posters", img: "images/LT-116-1.86IS.jpg", zoom: 100, posX: 50, posY: 50, name: "تلفزيون LED عملاق 116 بوصة P1.86", unit: "جهاز", soldBySqm: false, marketAED: 18780, resellerAED: 16432, specs: "مقاس 2.56×1.44 متر • ستاند متحرك • مدخل HDMI" },
-      { id: "LT-116-1.53IS", cat: "posters", img: "images/LT-116-1.53IS.jpg", zoom: 100, posX: 50, posY: 50, name: "تلفزيون LED عملاق 116 بوصة P1.53", unit: "جهاز", soldBySqm: false, marketAED: 21268, resellerAED: 18609, specs: "مقاس 2.56×1.44 متر • دقة فائقة GOB • ستاند متحرك" },
-
-      // 15-20: Interactive Smart Boards & Accessories
-      { id: "SB-65", cat: "smartboard", img: "images/SB-65.jpg", zoom: 100, posX: 50, posY: 50, name: "سبورة تفاعلية ذكية 65 بوصة 4K", unit: "جهاز", soldBySqm: false, marketAED: 3960, resellerAED: 3300, specs: "نظام Android 8G+128G • لمس متعدد 20 نقطة" },
-      { id: "SB-75", cat: "smartboard", img: "images/SB-75.jpg", zoom: 100, posX: 50, posY: 50, name: "سبورة تفاعلية ذكية 75 بوصة 4K", unit: "جهاز", soldBySqm: false, marketAED: 5090, resellerAED: 4242, specs: "نظام Android 13 8G+128G • للمدارس والاجتماعات" },
-      { id: "SB-86", cat: "smartboard", img: "images/SB-86.jpg", zoom: 100, posX: 50, posY: 50, name: "سبورة تفاعلية ذكية 86 بوصة 4K", unit: "جهاز", soldBySqm: false, marketAED: 6240, resellerAED: 5200, specs: "نظام Android 13 8G+128G • شاشة 4K مضادة للانعكاس" },
-      { id: "OPS-WIN11", cat: "smartboard", img: "images/OPS-WIN11.jpg", zoom: 100, posX: 50, posY: 50, name: "كمبيوتر مدمج OPS Windows 11 i5", unit: "قطعة", soldBySqm: false, marketAED: 1680, resellerAED: 1400, specs: "معالج Core i5 • رام 8GB • تخزين 256GB SSD" },
-      { id: "K-STAND", cat: "smartboard", img: "images/K-STAND.jpg", zoom: 100, posX: 50, posY: 50, name: "ستاند متحرك للسبورة الذكية", unit: "قطعة", soldBySqm: false, marketAED: 636, resellerAED: 530, specs: "حديد مطلي أسود مع عجلات وقفل أمان" },
-      { id: "AI-CAM-48MP", cat: "smartboard", img: "images/AI-CAM-48MP.jpg", zoom: 100, posX: 50, posY: 50, name: "كاميرا اجتماعات ذكية AI 48MP", unit: "قطعة", soldBySqm: false, marketAED: 420, resellerAED: 350, specs: "تتبع صوتي تلقائي للمتحدث • دقة 4K • ميكروفون مدمج" },
-
-      // 21-30: Modules, Rental Rigging, Power & Sensors
-      { id: "FLIGHT-CASE-8", cat: "modules", img: "images/FLIGHT-CASE-8.jpg", zoom: 100, posX: 50, posY: 50, name: "صندوق تخزين ونقل Flight Case", unit: "صندوق", soldBySqm: false, marketAED: 550, resellerAED: 500, specs: "مخصص لشاشات التأجير (يستوعب حتى 6-8 كبائن 50×50)" },
-      { id: "HANGING-BAR-05", cat: "modules", img: "images/HANGING-BAR-05.jpg", zoom: 100, posX: 50, posY: 50, name: "مسطرة تعليق علوية Hanging Bar 0.5m", unit: "قطعة", soldBySqm: false, marketAED: 116, resellerAED: 106, specs: "مسطرة تعليق ألمنيوم مقوى لكبائن التأجير 50×50 سم" },
-      { id: "MOD-IN-P2.5", cat: "modules", img: "images/MOD-IN-P2.5.jpg", zoom: 100, posX: 50, posY: 50, name: "موديول داخلي P2.5 (320×160 مم)", unit: "قطعة", soldBySqm: false, marketAED: 63, resellerAED: 58, specs: "تحديث 3840Hz • سطوع 700 nits" },
-      { id: "MOD-IN-P1.86", cat: "modules", img: "images/MOD-IN-P1.86.jpg", zoom: 100, posX: 50, posY: 50, name: "موديول داخلي P1.86 GOB (320×160)", unit: "قطعة", soldBySqm: false, marketAED: 112, resellerAED: 101, specs: "حماية GOB • تحديث 3840Hz" },
-      { id: "MOD-OUT-P4", cat: "modules", img: "images/MOD-OUT-P4.jpg", zoom: 100, posX: 50, posY: 50, name: "موديول خارجي P4 (320×160 مم)", unit: "قطعة", soldBySqm: false, marketAED: 69, resellerAED: 63, specs: "سطوع 5500 nits • مقاوم للعوامل الجوية" },
-      { id: "PSU-CZCL-300", cat: "modules", img: "images/PSU-CZCL-300.jpg", zoom: 100, posX: 50, posY: 50, name: "باور سبلاي CZCL 300W 5V", unit: "قطعة", soldBySqm: false, marketAED: 50, resellerAED: 45, specs: "يغذي حتى 6 موديولات خارجية بكفاءة عالية" },
-      { id: "PA-PLC-20KW", cat: "modules", img: "images/PA-PLC-20KW.jpg", zoom: 100, posX: 50, posY: 50, name: "لوحة توزيع كهرباء PA-PLC 20KW", unit: "لوحة", soldBySqm: false, marketAED: 1100, resellerAED: 1000, specs: "6 خطوط حماية • مخصصة لتشغيل شاشات LED" },
-      { id: "PA-PLC-30KW", cat: "modules", img: "images/PA-PLC-30KW.jpg", zoom: 100, posX: 50, posY: 50, name: "لوحة توزيع كهرباء PA-PLC 30KW", unit: "لوحة", soldBySqm: false, marketAED: 1450, resellerAED: 1320, specs: "9 خطوط حماية • للشاشات الخارجية والعملاقة" },
-      { id: "SSR-L16", cat: "modules", img: "images/SSR-L16.jpg", zoom: 100, posX: 50, posY: 50, name: "حساس السطوع التلقائي SSR-L16", unit: "قطعة", soldBySqm: false, marketAED: 265, resellerAED: 221, specs: "ضبط سطوع الشاشة الخارجية ليلاً/نهاراً تلقائياً" },
-      { id: "SSR-TEMP", cat: "modules", img: "images/SSR-TEMP.jpg", zoom: 100, posX: 50, posY: 50, name: "حساس قياس الحرارة والرطوبة SSR-TEMP", unit: "قطعة", soldBySqm: false, marketAED: 240, resellerAED: 200, specs: "مراقبة درجة حرارة الكابينة والحماية من السخونة" },
-
-      // 31-38: NovaStar & Colorlight Controllers & Receiving Cards
-      { id: "MRV412-N", cat: "controllers", img: "images/MRV412-N.jpg", zoom: 100, posX: 50, posY: 50, name: "كارت استقبال NovaStar MRV412-N", unit: "قطعة", soldBySqm: false, marketAED: 68, resellerAED: 58, specs: "سعة 512×512 بكسل • 12 منفذ HUB75" },
-      { id: "MRV416", cat: "controllers", img: "images/MRV416.jpg", zoom: 100, posX: 50, posY: 50, name: "كارت استقبال NovaStar MRV416", unit: "قطعة", soldBySqm: false, marketAED: 85, resellerAED: 72, specs: "سعة 512×384 بكسل • 16 منفذ HUB75E" },
-      { id: "NOVA-TB40", cat: "controllers", img: "images/NOVA-TB40.jpg", zoom: 100, posX: 50, posY: 50, name: "معالج تشغيل سحابي NovaStar TB40", unit: "جهاز", soldBySqm: false, marketAED: 901, resellerAED: 766, specs: "سعة 1.3 مليون بكسل • WiFi و LAN و USB" },
-      { id: "NOVA-TB60", cat: "controllers", img: "images/NOVA-TB60.jpg", zoom: 100, posX: 50, posY: 50, name: "معالج تشغيل سحابي NovaStar TB60", unit: "جهاز", soldBySqm: false, marketAED: 2071, resellerAED: 1760, specs: "سعة 2.3 مليون بكسل • تحكم سحابي متكامل" },
-      { id: "NOVA-VX600", cat: "controllers", img: "images/NOVA-VX600.jpg", zoom: 100, posX: 50, posY: 50, name: "معالج فيديو احترافي NovaStar VX600 PRO", unit: "جهاز", soldBySqm: false, marketAED: 5179, resellerAED: 4402, specs: "سعة 3.9 مليون بكسل • 6 مخارج شبكة" },
-      { id: "NOVA-VX1000", cat: "controllers", img: "images/NOVA-VX1000.jpg", zoom: 100, posX: 50, posY: 50, name: "معالج فيديو عملاق NovaStar VX1000 PRO", unit: "جهاز", soldBySqm: false, marketAED: 7409, resellerAED: 6298, specs: "سعة 6.5 مليون بكسل • 10 مخارج شبكة" },
-      { id: "COLORLIGHT-A200", cat: "controllers", img: "images/COLORLIGHT-A200.jpg", zoom: 100, posX: 50, posY: 50, name: "معالج تشغيل سحابي Colorlight A200", unit: "جهاز", soldBySqm: false, marketAED: 980, resellerAED: 830, specs: "سعة 1.3 مليون بكسل • تحكم WiFi و Cloud و 4G" },
-      { id: "COLORLIGHT-Z5", cat: "controllers", img: "images/COLORLIGHT-Z5.jpg", zoom: 100, posX: 50, posY: 50, name: "معالج فيديو احترافي Colorlight Z5", unit: "جهاز", soldBySqm: false, marketAED: 4650, resellerAED: 3950, specs: "سعة 4.2 مليون بكسل • معالجة 4K و HDR" }
-    ];
-
-    let PRODUCTS = JSON.parse(localStorage.getItem("wefone_custom_products_v2") || "null") || JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+    let PRODUCTS = JSON.parse(localStorage.getItem("wefone_custom_products_v3") || "null") || JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
     let cart = [];
     let savedOrders = JSON.parse(localStorage.getItem("wefone_orders_2026") || "[]");
 
@@ -806,7 +1745,7 @@
           ? '<button onclick="goToCalculatorWithModel(\'' + p.id + '\')" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs transition">🧮 احسب مقاسك في الحاسبة</button>'
           : '<button onclick="addToCart(\'' + p.id + '\')" class="w-full bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-amber-500/40 text-white font-bold py-2.5 rounded-xl text-xs transition">🛒 أضف إلى السلة</button>';
 
-        const adminEditHtml = isEditMode
+        const adminEditHtml = adminUnlocked
           ? '<div class="mt-2.5 pt-2.5 border-t border-emerald-500/40 space-y-1.5">' +
               '<div class="flex justify-between text-[11px] text-emerald-300 font-bold">' +
                 '<span>موزع: ' + p.resellerAED + ' AED</span>' +
@@ -1147,13 +2086,17 @@
         return;
       }
 
-      const custName = (document.getElementById("cust-name").value || "").trim() || "عميل الموقع";
-      const custPhone = (document.getElementById("cust-phone").value || "").trim() || "غير محدد";
+      const custName = (document.getElementById("cust-name").value || "").trim();
+      const custPhone = (document.getElementById("cust-phone").value || "").trim();
+      if (!custName || custPhone.replace(/\D/g, "").length < 7) {
+        showToast("اكتب الاسم ورقم جوال صحيحًا لتسجيل الطلب");
+        return;
+      }
       const shipDest = document.getElementById("shipping-dest").value;
       const custCity = (document.getElementById("cust-city").value || "").trim();
 
       const orderId = "WF-" + Math.floor(100000 + Math.random() * 900000);
-      const orderDate = new Date().toLocaleString("ar-SA");
+      const orderDate = new Date().toISOString();
 
       let totalMarketAED = 0;
       let totalResellerAED = 0;
@@ -1167,13 +2110,35 @@
         totalResellerAED += subR;
 
         itemsLinesCustomer.push((i + 1) + ". " + item.name + " (الكمية: " + item.qty + ") — " + formatPrice(subM));
-        itemsLinesSupplier.push((i + 1) + ". " + item.name + " | Qty: " + item.qty + " | Details: " + item.details + " | Reseller Cost: " + Math.round(subR) + " AED");
+        itemsLinesSupplier.push((i + 1) + ". " + item.name + " | كود: " + (item.uid || "مشروع") + " | الكمية: " + item.qty + " | التفاصيل/المقاس: " + item.details + " | تكلفة الوحدة: " + Math.round(item.resellerAED) + " AED | الإجمالي: " + Math.round(subR) + " AED");
       });
 
-      const supplierMsg = "Hello WeFone Team,\nNew Purchase Order *" + orderId + "*:\n\n" +
+      const supplierMsg = "طلب توريد جديد من متجر WeFone LED\nرقم الطلب: *" + orderId + "*\nالعميل: " + custName + "\nجوال العميل: " + custPhone + "\nالشحن: " + shipDest + " " + custCity + "\n\n" +
         itemsLinesSupplier.join("\n") +
-        "\n\n*Total Reseller Cost:* " + Math.round(totalResellerAED) + " AED\nShipping: " + shipDest + " " + custCity;
+        "\n\n*إجمالي تكلفة المورد:* " + Math.round(totalResellerAED) + " AED\nيرجى تأكيد التوفر ومدة التجهيز وتكلفة الشحن.";
       const supplierWaUrl = "https://wa.me/" + SUPPLIER_WHATSAPP + "?text=" + encodeURIComponent(supplierMsg);
+
+      const orderRecord = {
+        orderId: orderId,
+        createdAt: orderDate,
+        customerName: custName,
+        customerPhone: custPhone,
+        shippingDestination: shipDest,
+        cityAndNotes: custCity,
+        customerTotalSAR: Math.round(totalMarketAED * CURRENCY_RATES.SAR.rate),
+        supplierTotalAED: Math.round(totalResellerAED),
+        supplierMessage: supplierMsg,
+        supplierWhatsAppUrl: supplierWaUrl,
+        website: "",
+        items: cart.map(item => ({
+          productId: item.uid || "PROJECT",
+          productName: item.name,
+          quantity: item.qty,
+          details: item.details,
+          customerUnitAED: item.marketAED,
+          supplierUnitAED: item.resellerAED
+        }))
+      };
 
       savedOrders.unshift({
         orderId: orderId,
@@ -1185,7 +2150,7 @@
         supplierTotalAED: Math.round(totalResellerAED) + " AED",
         supplierWaUrl: supplierWaUrl
       });
-      localStorage.setItem("wefone_orders_2026", JSON.stringify(savedOrders));
+      try { localStorage.setItem("wefone_orders_2026", JSON.stringify(savedOrders)); } catch (error) { /* central sheet is the order record */ }
       updateOrdersBadge();
 
       const customerMsg = "السلام عليكم، أرغب في طلب عرض سعر وتوريد من متجر *WeFone LED*:\n" +
@@ -1199,15 +2164,33 @@
         "*(تكلفة الشحن تُحدد حسب حجم الطلبية وتتم مراجعتها)*";
 
       const waLink = "https://wa.me/" + MY_WHATSAPP + "?text=" + encodeURIComponent(customerMsg);
-      window.open(waLink, "_blank");
+      const whatsappWindow = window.open("about:blank", "_blank");
+      saveOrderToGoogleSheet(orderRecord).then(saved => {
+        if (!saved) showToast("تنبيه: لم يصل الطلب إلى سجل Google بعد؛ يُرجى إكمال الربط قبل استقبال العملاء.");
+        else showToast("تم حفظ الطلب في سجل المتجر، جارٍ فتح واتساب.");
+        if (whatsappWindow) whatsappWindow.location.href = waLink;
+        else window.location.href = waLink;
+      });
+    }
+
+    async function saveOrderToGoogleSheet(orderRecord) {
+      if (!ORDERS_WEB_APP_URL) return false;
+      try {
+        await fetch(ORDERS_WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body: new URLSearchParams({ action: "order", payload: JSON.stringify(orderRecord) })
+        });
+        return true;
+      } catch (error) {
+        return false;
+      }
     }
 
     // ==========================================
     // 6. SECRET ADMIN ACCESS & FULL PRODUCT EDITOR
     // ==========================================
-    let logoTapCount = 0;
-    let logoTapTimer = null;
-
     function closePinModal() {
       document.getElementById("pin-modal").classList.add("hidden");
     }
@@ -1308,6 +2291,7 @@
     function saveProductEdits() {
       const id = document.getElementById("edit-prod-id").value;
       const p = PRODUCTS.find(x => x.id === id);
+      if (!adminUnlocked) { showToast("افتح الإعدادات بالضغط خمس مرات على الشعار"); return; }
       if (!p) return;
 
       p.img = document.getElementById("edit-prod-img").value.trim();
@@ -1325,7 +2309,7 @@
       if (!isNaN(rVal) && rVal >= 0) p.resellerAED = rVal;
 
       try {
-        localStorage.setItem("wefone_custom_products_v2", JSON.stringify(PRODUCTS));
+        localStorage.setItem("wefone_custom_products_v3", JSON.stringify(PRODUCTS));
       } catch (err) {
         showToast("⚠️ تم الحفظ للجلسة الحالية (مساحة الصور المحلية ممتلئة)");
       }
@@ -1334,12 +2318,12 @@
       populateCalculatorSelect();
       updateCalculator();
       closeProductEditor();
-      showToast("✅ تم حفظ تعديلات الصورة والموضع والتسمية والسعر");
+      showToast("✅ تم الحفظ في هذا المتصفح. حدّث جدول الكتالوج لتعميم التغيير على كل الزوار.");
     }
 
     function resetProductsToDefault() {
       if (!confirm("هل أنت متأكد من استعادة جميع الأسعار والصور والتسميات الافتراضية؟")) return;
-      localStorage.removeItem("wefone_custom_products_v2");
+      localStorage.removeItem("wefone_custom_products_v3");
       PRODUCTS = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
       renderProducts();
       populateCalculatorSelect();
@@ -1420,7 +2404,18 @@
     populateCalculatorSelect();
     onCalcScreenChange();
     renderCart();
+    const initialTheme = document.documentElement.dataset.theme === "light";
+    document.getElementById("theme-toggle-icon").textContent = initialTheme ? "🌙" : "☀️";
+    document.getElementById("theme-toggle-label").textContent = initialTheme ? "غامق" : "فاتح";
+    loadCatalogFromGoogleSheet();
+    if (PRIVATE_ORDER_BOOK_ID) setPrivateOrdersSheet(PRIVATE_ORDER_BOOK_ID);
   </script>
 </body>
 </html>
+
+
+
+
+
+
 
