@@ -491,10 +491,10 @@
     <div class="w-full max-w-sm rounded-2xl border border-amber-500/40 bg-[#0F172A] p-5 space-y-4 text-center">
       <div class="text-3xl">⚙️</div>
       <h3 class="text-lg font-black text-amber-400">إعدادات المتجر</h3>
-      <p class="text-sm text-slate-300 leading-relaxed">اضغط خمس مرات على الشعار لفتح هذه النافذة. أضف أو عدّل المنتجات والأسعار والمواصفات ورابط الصورة في جدول الكتالوج، ثم حدّث الصفحة. استخدم رابط صورة عام يبدأ بـ https:// لصور المنتجات.</p>
-      <a href="https://docs.google.com/spreadsheets/d/1oOMsgkZXoc-xHBYN2PuyMuu1PzcWQE6rl9SHaU_6NKk/edit?gid=1999798434#gid=1999798434" target="_blank" rel="noopener noreferrer" class="block w-full gold-gradient rounded-xl px-4 py-3 font-black text-slate-950">📋 فتح كتالوج المنتجات</a>
+      <p class="text-sm text-slate-300 leading-relaxed">اضغط خمس مرات على الشعار لفتح الإعدادات. من ملف الإدارة الخاص تقدر تعدّل الأسعار والمواصفات وروابط الصور وتضيف صفوفًا لمنتجات جديدة؛ بعدها حدّث الموقع. استخدم رابط صورة عام يبدأ بـ https://.</p>
+      <a href="https://docs.google.com/spreadsheets/d/1oOMsgkZXoc-xHBYN2PuyMuu1PzcWQE6rl9SHaU_6NKk/edit?gid=1999798434#gid=1999798434" target="_blank" rel="noopener noreferrer" class="block w-full rounded-xl border border-amber-500/40 bg-amber-900/20 px-4 py-3 font-bold text-amber-200">📋 عرض ملف الأسعار الأصلي</a>
       <a id="private-orders-link" href="#" target="_blank" rel="noopener noreferrer" class="block w-full rounded-xl border border-emerald-500/50 bg-emerald-900/30 px-4 py-3 font-bold text-emerald-200">🔒 فتح سجل الطلبات الخاص</a>
-      <p id="orders-link-note" class="text-xs text-slate-400">يُضاف رابط سجل الطلبات بعد إعداد Google Apps Script.</p>
+      <p id="orders-link-note" class="text-xs text-slate-400">ملف الإدارة يجمع الكتالوج وسجل الطلبات، وتظل بيانات العملاء خاصة.</p>
       <button onclick="closeAdminSettings()" class="w-full rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-200">إغلاق</button>
     </div>
   </div>
@@ -641,8 +641,8 @@
     // ==========================================
     const MY_WHATSAPP = "966568397048";
     const SUPPLIER_WHATSAPP = "201011060894";
-    const ORDERS_WEB_APP_URL = ""; // Paste the deployed Apps Script web-app URL here before publishing.
-    const PRIVATE_ORDER_BOOK_ID = ""; // Fill from setupOrderSheets() output before publishing.
+    const ORDERS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzExfGT8wFbHjmNbTvgqw0XC_PhMLRK0nge9huNJsLCFVGnr7k-5FRgLw4GTm4i5ut07Q/exec";
+    const PRIVATE_ORDER_BOOK_ID = "12OtiPf1UVyE9NeofilCn7KqmE1bCpnkNTXxrhLh-_t4";
 
     const CURRENCY_RATES = {
       SAR: { rate: 1.02, symbol: "ر.س" },
@@ -688,6 +688,7 @@
       if (!sheetId) return;
       const link = document.getElementById("private-orders-link");
       link.href = "https://docs.google.com/spreadsheets/d/" + encodeURIComponent(sheetId) + "/edit";
+      link.textContent = "📊 فتح ملف إدارة المنتجات والطلبات";
       link.classList.remove("hidden");
       document.getElementById("orders-link-note").textContent = "ملف الطلبات خاص ولا يراه إلا من تمنحه صلاحية من Google Drive.";
     }
