@@ -1,9 +1,8 @@
 const SPREADSHEET_ID = "1oOMsgkZXoc-xHBYN2PuyMuu1PzcWQE6rl9SHaU_6NKk";
-const CATALOG_SHEET = "كتالوج الأسعار والصور (64)";
+const CATALOG_GID = "1999798434";
 const ORDERS_SHEET = "سجل الطلبات والمورد";
 const ORDER_ITEMS_SHEET = "تفاصيل الطلبات";
 const CUSTOMER_SAR_RATE = 1.02;
-const ORDER_BOOK_ID_PROPERTY = "WEFONE_PRIVATE_ORDER_BOOK_ID";
 
 function doGet(e) {
   if (!e || !e.parameter || e.parameter.action !== "catalog") {
@@ -31,9 +30,8 @@ function doPost(e) {
     const lock = LockService.getScriptLock();
     lock.waitLock(10000);
     try {
-      const orderBookId = PropertiesService.getScriptProperties().getProperty(ORDER_BOOK_ID_PROPERTY);
-      if (!orderBookId) throw new Error("Order book is not initialized; run setupOrderSheets first");
-      const ss = SpreadsheetApp.openById(orderBookId);
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      if (!ss) throw new Error("Bind this script to the private order spreadsheet first");
       const ordersSheet = getOrCreateSheet_(ss, ORDERS_SHEET, [
         "رقم الطلب", "التاريخ والوقت", "اسم العميل", "جوال العميل", "المدينة / الشحن",
         "الأصناف المطلوبة", "سعر البيع للعميل (SAR)", "تكلفة المورد (AED)",
@@ -61,16 +59,16 @@ function doPost(e) {
         (item.details ? " (" + item.details + ")" : "")).join(" | ");
 
       ordersSheet.appendRow([
-        cleanText_(order.orderId, 32), now, cleanText_(order.customerName, 120),
-        cleanPhone_(order.customerPhone), destination,
-        itemSummary, Math.round(totalCustomerSAR), Math.round(totalSupplierAED),
+        cleanText_(order.orderId, 32), now, sheetText_(order.customerName, 120),
+        sheetText_(cleanPhone_(order.customerPhone), 40), sheetText_(destination, 420),
+        sheetText_(itemSummary, 6000), Math.round(totalCustomerSAR), Math.round(totalSupplierAED),
         Math.round(estimatedProfitAED), supplierUrl
       ]);
 
       const detailRows = items.map(item => [
-        cleanText_(order.orderId, 32), now, cleanText_(order.customerName, 120),
-        cleanPhone_(order.customerPhone), destination, item.productId,
-        item.productName, item.quantity, item.details,
+        cleanText_(order.orderId, 32), now, sheetText_(order.customerName, 120),
+        sheetText_(cleanPhone_(order.customerPhone), 40), sheetText_(destination, 420), sheetText_(item.productId, 80),
+        sheetText_(item.productName, 180), item.quantity, sheetText_(item.details, 1500),
         Math.round(item.customerUnitSAR), Math.round(item.supplierUnitAED),
         Math.round(item.customerLineSAR), Math.round(item.supplierLineAED)
       ]);
@@ -86,18 +84,10 @@ function doPost(e) {
   }
 }
 
-// Run once from the Apps Script editor. This creates a new private spreadsheet for customer data.
+// Run once from this bound script. It only prepares tabs in its private host spreadsheet.
 function setupOrderSheets() {
-  const props = PropertiesService.getScriptProperties();
-  let orderBookId = props.getProperty(ORDER_BOOK_ID_PROPERTY);
-  let ss;
-  if (orderBookId) {
-    ss = SpreadsheetApp.openById(orderBookId);
-  } else {
-    ss = SpreadsheetApp.create("WeFone LED - سجل الطلبات الخاص");
-    orderBookId = ss.getId();
-    props.setProperty(ORDER_BOOK_ID_PROPERTY, orderBookId);
-  }
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) throw new Error("Run setupOrderSheets from the private order spreadsheet");
   getOrCreateSheet_(ss, ORDERS_SHEET, [
     "رقم الطلب", "التاريخ والوقت", "اسم العميل", "جوال العميل", "المدينة / الشحن",
     "الأصناف المطلوبة", "سعر البيع للعميل (SAR)", "تكلفة المورد (AED)",
@@ -115,9 +105,10 @@ function setupOrderSheets() {
 }
 
 function readCatalog_() {
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(CATALOG_SHEET);
-  if (!sheet || sheet.getLastRow() < 2) return [];
-  const values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 11).getDisplayValues();
+  const url = "https://docs.google.com/spreadsheets/d/" + SPREADSHEET_ID + "/export?format=csv&gid=" + CATALOG_GID;
+  const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  if (response.getResponseCode() !== 200) throw new Error("Catalog CSV is not publicly readable");
+  const values = Utilities.parseCsv(response.getContentText("UTF-8")).slice(1);
   return values.filter(row => row[1] && row[3]).map(row => {
     const id = String(row[1]).trim();
     const categoryName = String(row[2] || "");
@@ -213,6 +204,11 @@ function cleanText_(value, maxLength) {
 
 function cleanPhone_(value) {
   return cleanText_(value, 40).replace(/[^0-9+() -]/g, "");
+}
+
+function sheetText_(value, maxLength) {
+  const text = cleanText_(value, maxLength);
+  return /^[=+@-]/.test(text) ? "'" + text : text;
 }
 
 function jsonOutput_(value) {
