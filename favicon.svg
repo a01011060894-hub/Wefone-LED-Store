@@ -1,6 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f59e0b"/><stop offset="1" stop-color="#d97706"/></linearGradient></defs>
-  <rect width="64" height="64" rx="16" fill="#0b132b"/>
-  <rect x="5" y="5" width="54" height="54" rx="14" fill="url(#g)"/>
-  <text x="32" y="40" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="900" fill="#0b132b">WF</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+<defs><linearGradient id="wf" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0B1F4A"/><stop offset=".55" stop-color="#1D4ED8"/><stop offset="1" stop-color="#06B6D4"/></linearGradient></defs>
+<rect x="2" y="2" width="60" height="60" rx="15" fill="url(#wf)" stroke="#67E8F9" stroke-width="1.5"/>
+<g><rect x="11" y="11" width="8" height="8" rx="2" fill="#fff"/><rect x="21" y="11" width="8" height="8" rx="2" fill="#22D3EE"/><rect x="31" y="11" width="8" height="8" rx="2" fill="#FBBF24"/><rect x="41" y="11" width="8" height="8" rx="2" fill="#fff" fill-opacity=".8"/><rect x="11" y="21" width="8" height="8" rx="2" fill="#22D3EE"/><rect x="21" y="21" width="8" height="8" rx="2" fill="#fff"/><rect x="31" y="21" width="8" height="8" rx="2" fill="#22D3EE"/><rect x="41" y="21" width="8" height="8" rx="2" fill="#FBBF24"/></g>
+<text x="32" y="49" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="18" font-weight="900">WF</text></svg>
