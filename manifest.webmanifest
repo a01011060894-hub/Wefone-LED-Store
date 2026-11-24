@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "WeFone LED | متجر وحاسبة شاشات العرض",
+  "short_name": "WeFone LED",
+  "description": "متجر شاشات LED وحاسبة المشاريع وخدمات التوريد والتركيب",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#071226",
+  "theme_color": "#0B1F4A",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
